@@ -53,9 +53,9 @@ jobs:
       - run:
           name: Build front-end
           command: |
-            cd frontend
+            cd /frontend
             npm install
-            npm install husky --save-dev
+            node husky install
             npm run build
       - save_cache:
           paths: [frontend/node_modules]
@@ -420,7 +420,7 @@ jobs:
   #         circle_workflow_id: "${CIRCLE_WORKFLOW_ID:0:5}"
 
 workflows:
-  udapeople-workspace:
+  pictureminer-workspace:
     jobs:
       - build-frontend
       # - build-backend
