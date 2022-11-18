@@ -53,7 +53,7 @@ jobs:
       - run:
           name: Build front-end
           command: |
-            cd /frontend
+            cd frontend
             npm install
             node husky install
             npm run build
