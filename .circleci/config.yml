@@ -54,8 +54,10 @@ jobs:
           name: Build front-end
           command: |
             cd frontend
-            npm install
-            node husky install
+            npx husky-init && npm install       # npm
+            npx husky-init && yarn              # Yarn 1
+            yarn dlx husky-init --yarn2 && yarn # Yarn 2+
+            pnpm dlx husky-init && pnpm install # pnpm
             npm run build
       - save_cache:
           paths: [frontend/node_modules]
