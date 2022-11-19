@@ -47,6 +47,7 @@ commands:
             sudo bash nodesource_setup.sh
             sudo apt-get install nodejs
             sudo apt-get install build-essential
+
 jobs:
   build-frontend:
     docker:
@@ -65,6 +66,22 @@ jobs:
           paths: [frontend/node_modules]
           key: frontend-build
 
+  # Dockerizing and deploying api by Abdul-Barri
+  build-api:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
+      - run: |
+          cd api
+      - setup_remote_docker
+      - run: |
+          TAG=0.1.$CIRCLE_BUILD_NUM
+          docker build -t abdulbarri/golang-api:$TAG .
+          echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+          docker push abdulbarri/golang-api:$TAG
+
+ 
   # build-backend:
   #   docker:
   #     - image: circleci/node:13.8.0
@@ -427,6 +444,7 @@ workflows:
   pictureminer-workspace:
     jobs:
       - build-frontend
+      - build-api
       # - build-backend
       # - test-frontend:
       #     requires: [build-frontend]
