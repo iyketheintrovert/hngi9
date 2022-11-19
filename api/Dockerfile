@@ -2,6 +2,8 @@
 
 FROM golang:1.19
 
+MAINTAINER Abdul-Barri Lawal <lawalabdulbarri@gmail.com>
+
 WORKDIR /app
 
 COPY go.mod ./
