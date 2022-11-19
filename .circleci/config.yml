@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  git-tools: sandbox/git-tools@0.3.0
+
 parameters:
   workflow_id:
     type: string
@@ -12,7 +15,7 @@ commands:
       - run:
           name: Install Husky
           command:  |
-            sudo npm install husky --save-dev
+            npm i husky@4.3.0
 
   install_awscli:
     description: Install AWS CLI v2
@@ -33,30 +36,31 @@ commands:
             python3 -m pip install --user ansible
 
   install_nodejs:
-    description:  Install Node.js 13.8.0
+    description:  Install Node.js 16.0.0
     steps:
       - run:
           name: Install Node.js
           command:  |
             # Install Node.js LTS version as our base Node.js version
-            curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
-            sudo apt install -y nodejs
-            # Use n version manager to use Node.js v13.8.0
-            sudo npm install --global n
-            sudo n 13.8.0
+            curl -sL https://deb.nodesource.com/setup_16.x -o nodesource_setup.sh
+            nano nodesource_setup.sh
+            sudo bash nodesource_setup.sh
+            sudo apt-get install nodejs
+            sudo apt-get install build-essential
 jobs:
   build-frontend:
     docker:
-      - image: circleci/node:13.8.0
+      - image: circleci/node:latest
     steps:
       - checkout
       - run:
           name: Build front-end
           command: |
             cd frontend
-            npm install
-            npx --no-install husky install
+            npm install -g node@16.0.0
+            npm i husky
             npm run build
+            npm audit fix
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-build
