@@ -5,10 +5,29 @@ import (
 )
 
 type User struct {
-	ID         primitive.ObjectID `bson:"_id"`
-	First_name *string            `bson:"first_name" validate:"required, min=5, max=100"`
-	Last_name  *string            `bson:"last_name" validate:"required, min=5, max=150"`
-	Email      *string            `bson:"email" validate:"email, required"`
-	Username   *string            `bson:"username" validate:"min=8"`
-	Password   *string            `bson:"password" validate:"required, min=8"`
+	ID           primitive.ObjectID `bson:"_id"`
+	Username     string             `bson:"username" json:"username" validate:"required, min=4, max=100"`
+	FirstName    string             `bson:"first_name" json:"first_name"`
+	LastName     string             `bson:"last_name" json:"last_name"`
+	Email        string             `bson:"email" json:"email" validate:"email, required"`
+	Password     string             `bson:"password" json:"password" validate:"required, min 8"`
+}
+
+type UserStruct struct {
+	Token        *string            `bson:"access_token" json:"access_token"`
+	TokenType    string             `bson:"token_type" json:"token_type"`
+	ID           primitive.ObjectID `bson:"_id"`
+	UserName     string             `bson:"userName" json:"userName" validate:"required"`
+	FirstName    string             `bson:"firstname" json:"firstname"`
+	LastName     string             `bson:"lastname" json:"lastname"`
+	Email        string             `bson:"email" json:"email" validate:"required"`
+	Password     string             `bson:"password" json:"password" validate:"required"`
+	ApiCallCount int                `bson:"api_call_count" json:"api_call_count"`
+	//DataCreated  time.Time          `bson:"dataCreated" json:"datacreated"`
+	//DateModified time.Time          `bson:"dateModified"json:"datemodified"`
+}
+
+type UserLoginField struct {
+	Email    string `json:"email" binding:"required"`
+	Password string `json:"password" binding:"required"`
 }
