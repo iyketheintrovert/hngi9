@@ -1,20 +1,20 @@
 version: '2'
 
 services:
-    api:
+    pictureminer-ml:
         build:
-            context: ./api
+            context: ./pictureminer.ml-dev
         ports:
-            - "8000:8000"
+            - "9000:9000"
     
-    backend:
+    pictureminer-backend:
         build:
-            context: ./backend
+            context: ./pictureminer.api-dev
         ports:
             - "8000:8000"
 
-    frontend:
+    pictureminer-frontend:
         build:
-            context: ./frontend
+            context: ./pictureminer.web-dev
         ports:
             - "3000:3000"
