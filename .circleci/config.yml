@@ -1,8 +1,5 @@
 version: 2.1
 
-orbs:
-  git-tools: sandbox/git-tools@0.3.0
-
 parameters:
   workflow_id:
     type: string
@@ -458,4 +455,4 @@ workflows:
       # - cleanup:
       #     requires: [cloudfront-update, prometheus-node-exporter]
 
-# VS Code Extension Version: 1.0.2
+# VS Code Extension Version: 1.1.1
