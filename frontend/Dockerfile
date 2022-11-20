@@ -1,14 +1,19 @@
 # pull the official base image
-FROM node:14.21.1-alpine
+FROM node:16-alpine
 
 # set work directory
 WORKDIR /frontend
+
+# copy app files
+COPY . .
 
 # install dependencies
 RUN npm install
 
 # copy project
 COPY . /frontend
+
+RUN npm run build
 
 EXPOSE 3000
 
