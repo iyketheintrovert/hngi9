@@ -1,12 +1,8 @@
-FROM python:3.11.0-slim
-
+FROM golang:1.12.0-alpine3.9
 WORKDIR /backend
-
-COPY . /backend
-RUN pip install --upgrade pip && pip install -r requirements.txt
-
-COPY . /backend
-
-EXPOSE 8000
-
-CMD [“uvicorn”, “main:app”, “--host=0.0.0.0” , “--reload” , “--port”, “8000”]
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+RUN go build -o /backend
+EXPOSE 9000
+CMD [ "/backend" ]r scan
