@@ -6,7 +6,7 @@ orbs:
 parameters:
   workflow_id:
     type: string
-    default:  "${CIRCLE_WORKFLOW_ID}"
+    default: "${CIRCLE_WORKFLOW_ID}"
 
 commands:
   install_husky:
@@ -14,7 +14,7 @@ commands:
     steps:
       - run:
           name: Install Husky
-          command:  |
+          command: |
             npm i husky@4.3.0
 
   install_awscli:
@@ -22,48 +22,64 @@ commands:
     steps:
       - run:
           name: Install AWS CLI v2
-          command:  |
+          command: |
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
             unzip awscliv2.zip
             sudo ./aws/install
-  
+
   install_ansible:
     description: Install Ansible
     steps:
       - run:
           name: Install Ansible
-          command:  |
+          command: |
             python3 -m pip install --user ansible
 
   install_nodejs:
-    description:  Install Node.js 16.0.0
+    description: Install Node.js 16.0.0
     steps:
       - run:
           name: Install Node.js
-          command:  |
+          command: |
             # Install Node.js LTS version as our base Node.js version
             curl -sL https://deb.nodesource.com/setup_16.x -o nodesource_setup.sh
             nano nodesource_setup.sh
             sudo bash nodesource_setup.sh
             sudo apt-get install nodejs
             sudo apt-get install build-essential
+
 jobs:
-  build-frontend:
+  # build-frontend:
+  #   docker:
+  #     - image: circleci/node:latest
+  #   steps:
+  #     - checkout
+  #     - run:
+  #         name: Build front-end
+  #         command: |
+  #           cd frontend
+  #           npm install -g node@16.0.0
+  #           npm i husky
+  #           npm run build
+  #           npm audit fix
+  #     - save_cache:
+  #         paths: [frontend/node_modules]
+  #         key: frontend-build
+
+  # Dockerizing and deploying api by Abdul-Barri
+  build-api:
     docker:
-      - image: circleci/node:latest
+      - image: cimg/base:stable
     steps:
       - checkout
-      - run:
-          name: Build front-end
-          command: |
-            cd frontend
-            npm install -g node@16.0.0
-            npm i husky
-            npm run build
-            npm audit fix
-      - save_cache:
-          paths: [frontend/node_modules]
-          key: frontend-build
+      - run: |
+          cd api
+      - setup_remote_docker
+      - run: |
+          TAG=0.1.$CIRCLE_BUILD_NUM
+          docker build -t abdulbarri/golang-api:$TAG .
+          echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+          docker push abdulbarri/golang-api:$TAG
 
   # build-backend:
   #   docker:
@@ -95,7 +111,7 @@ jobs:
   #           cd frontend
   #           npm install
   #           npm run test
-                
+
   # test-backend:
   #   docker:
   #     - image: circleci/node:13.8.0
@@ -177,7 +193,7 @@ jobs:
   #             --template-file .circleci/files/frontend.yml \
   #             --tags project=udapeople \
   #             --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:5}" \
-  #             --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:5}"  
+  #             --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:5}"
   #     - run:
   #         name: Add back-end ip to ansible inventory
   #         command: |
@@ -254,7 +270,7 @@ jobs:
   #     - install_awscli
   #     - install_nodejs
   #     - restore_cache:
-  #         keys: [backend-build] 
+  #         keys: [backend-build]
   #     - run:
   #         name: Install dependencies
   #         command: |
@@ -277,7 +293,7 @@ jobs:
   #           aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:5} --recursive
   #     - destroy-environment:
   #         circle_workflow_id: "${CIRCLE_WORKFLOW_ID:0:5}"
-  #     - revert-migrations: 
+  #     - revert-migrations:
   #         circle_workflow_id: "${CIRCLE_WORKFLOW_ID:0:5}"
 
   # deploy-backend:
@@ -318,7 +334,7 @@ jobs:
   #           ansible-playbook -i inventory.txt deploy-backend.yml
   #     - destroy-environment:
   #         circle_workflow_id: "${CIRCLE_WORKFLOW_ID:0:5}"
-  #     - revert-migrations: 
+  #     - revert-migrations:
   #         circle_workflow_id: "${CIRCLE_WORKFLOW_ID:0:5}"
 
   # smoke-test:
@@ -359,7 +375,7 @@ jobs:
   #           fi
   #     - destroy-environment:
   #         circle_workflow_id: "${CIRCLE_WORKFLOW_ID:0:5}"
-  #     - revert-migrations: 
+  #     - revert-migrations:
   #         circle_workflow_id: "${CIRCLE_WORKFLOW_ID:0:5}"
 
   # cloudfront-update:
@@ -408,9 +424,9 @@ jobs:
   #             --no-paginate --output text)
   #           echo OldWorkflowID: "${OldWorkflowID}"
   #           echo CIRCLE_WORKFLOW_ID "${CIRCLE_WORKFLOW_ID:0:5}"
-  #           # Fetch the stack names          
+  #           # Fetch the stack names
   #           export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
-  #             --stack-status-filter CREATE_COMPLETE --no-paginate --output text)) 
+  #             --stack-status-filter CREATE_COMPLETE --no-paginate --output text))
   #           echo Stack names: "${STACKS[@]}"
   #           if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
   #           then
@@ -426,7 +442,8 @@ jobs:
 workflows:
   pictureminer-workspace:
     jobs:
-      - build-frontend
+      # - build-frontend
+      - build-api
       # - build-backend
       # - test-frontend:
       #     requires: [build-frontend]
@@ -457,5 +474,4 @@ workflows:
       #     requires: [smoke-test]
       # - cleanup:
       #     requires: [cloudfront-update, prometheus-node-exporter]
-
 # VS Code Extension Version: 1.0.2
