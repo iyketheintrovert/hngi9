@@ -3,8 +3,9 @@ package mongodb
 import (
 	"context"
 	"fmt"
-	"github.com/workshopapps/pictureminer.api/internal/constants"
-	"github.com/workshopapps/pictureminer.api/internal/model"
+
+	//"github.com/workshopapps/pictureminer.api/internal/constants"
+	//"github.com/workshopapps/pictureminer.api/internal/model"
 	"log"
 
 	"github.com/workshopapps/pictureminer.api/internal/config"
